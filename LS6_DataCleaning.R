@@ -1,28 +1,30 @@
-## clean/format the data with regular expressions
-## More on these later. For now, know that the
-## pattern "[^[:digit:]]" refers to members of the variable name that
-## start with digits. We use the gsub command to replace them with a blank space.
-# We create a new variable that is a "clean' version of sale.price.
-# And sale.price.n is numeric, not a factor.
+## Create variable sale.price.n as numeric
+## Use the gsub command to replace digits with a blank space
 bk$SALE.PRICE.N <- as.numeric(gsub("[^[:digit:]]","", bk$SALE.PRICE))
 count(is.na(bk$SALE.PRICE.N))
 
-names(bk) <- tolower(names(bk)) # make all variable names lower case
-## Get rid of leading digits
+## Make all variable names lower case
+names(bk) <- tolower(names(bk))
+
+# Create new variables:
+# Get rid of leading digits
+# Make factors numeric values
 bk$gross.sqft <- as.numeric(gsub("[^[:digit:]]","", bk$gross.square.feet))
 bk$land.sqft <- as.numeric(gsub("[^[:digit:]]","", bk$land.square.feet))
 bk$year.built <- as.numeric(as.character(bk$year.built))
 
-## keep only the actual sales
+## New dataset for data on properties that have sales
 bk.sale <- bk[bk$sale.price.n!=0,]
-plot(bk.sale$gross.sqft,bk.sale$sale.price.n)
-plot(log10(bk.sale$gross.sqft),log10(bk.sale$sale.price.n))
 
+## New dataset for 1,2,3 bedroom family homes
+bk.homes <- bk.sale[which(grepl("FAMILY",bk.sale$building.class.category)),]
 
-## remove outliers that seem like they weren't actual sales
+## Remove outliers that seem like they weren't actual sales
 bk.homes$outliers <- (log10(bk.homes$sale.price.n) <=5) + 0
 bk.homes <- bk.homes[which(bk.homes$outliers==0),]
-plot(log(bk.homes$gross.sqft),log(bk.homes$sale.price.n))
 
+## Make sure that dates are formatted correctly
+typeof(bk.homes$sale.date)
 
-## make sure that dates are formatted correctly
+## Format dates
+
