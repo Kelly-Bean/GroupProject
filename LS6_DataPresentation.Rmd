@@ -1,0 +1,23 @@
+---
+title: "LS6_DataPresentation"
+authors: "Kelly Bean, Olivia Leeson, John Dorsey"
+date: "October 20, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Summary of Data (Important Descriptive Statistics)
+
+
+
+# Relationship Between Square Footage and Price
+
+
+
+# Relationship for log transformed data for 1-, 2-, and 3-family homes
+
+
+
+# Conclusion
