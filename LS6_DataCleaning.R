@@ -1,3 +1,8 @@
+## Histogram Sale Price
+attach(bk)
+hist(sale.price.n) 
+detach(bk)
+
 ## Create variable sale.price.n as numeric
 ## Use the gsub command to replace digits with a blank space
 bk$SALE.PRICE.N <- as.numeric(gsub("[^[:digit:]]","", bk$SALE.PRICE))
@@ -19,7 +24,7 @@ bk.sale <- bk[bk$sale.price.n!=0,]
 ## New dataset for 1,2,3 bedroom family homes
 bk.homes <- bk.sale[which(grepl("FAMILY",bk.sale$building.class.category)),]
 
-## Remove outliers that seem like they weren't actual sales
+## Remove outliers in sales data
 bk.homes$outliers <- (log10(bk.homes$sale.price.n) <=5) + 0
 bk.homes <- bk.homes[which(bk.homes$outliers==0),]
 
@@ -27,4 +32,5 @@ bk.homes <- bk.homes[which(bk.homes$outliers==0),]
 typeof(bk.homes$sale.date)
 
 ## Format dates
-
+bk.homes$saledate <- as.character(bk.homes$sale.date)
+bk.homes$saledate <- as.Date(bk.homes$saledate,"%m/%d/%y")
