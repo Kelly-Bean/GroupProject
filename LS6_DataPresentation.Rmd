@@ -8,16 +8,63 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# Summary of Data (Important Descriptive Statistics)
 
 
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+########################
+#
+# This portion of R code creates
+# objects used in later analyses.
+#
+########################
+library(plyr)
+library(gdata)
+setwd("C:\\Users\\Kelly\\Desktop\\ClassFall2016\\Doing Data Science")
 
-# Relationship Between Square Footage and Price
+#Save csv data to single object 'bk'
+bk <- read.csv("rollingsales_statenisland2.csv",skip=4,header=TRUE)
+## Create variable sale.price.n as numeric
+## Use the gsub command to replace digits with a blank space
+bk$SALE.PRICE.N <- as.numeric(gsub("[^[:digit:]]","", bk$SALE.PRICE))
+#count(is.na(bk$SALE.PRICE.N))
+
+## Make all variable names lower case
+names(bk) <- tolower(names(bk))
+
+# Create new variables:
+# Get rid of leading digits
+# Make factors numeric values
+bk$gross.sqft <- as.numeric(gsub("[^[:digit:]]","", bk$gross.square.feet))
+bk$land.sqft <- as.numeric(gsub("[^[:digit:]]","", bk$land.square.feet))
+bk$year.built <- as.numeric(as.character(bk$year.built))
+
+## New dataset for data on properties that have sales
+bk.sale <- bk[bk$sale.price.n!=0,]
+
+## New dataset for 1,2,3 bedroom family homes
+bk.homes <- bk.sale[which(grepl("FAMILY",bk.sale$building.class.category)),]
+
+## Remove outliers in sales data
+bk.homes$outliers <- (log10(bk.homes$sale.price.n) <=5) + 0
+bk.homes <- bk.homes[which(bk.homes$outliers==0),]
+
+## Format dates
+bk.homes$saledate <- as.character(bk.homes$sale.date)
+bk.homes$saledate <- as.Date(bk.homes$saledate,"%m/%d/%y")
+```
 
 
+# Meaningful Patterns
+The most obvious pattern presented by the data set is the positive relationship between square footage and sale price; as square footage increases, so does the sale price.
+Even performing a log-transformation on the data to count for right-skewness, the data still show a generally positive relationship. 
 
-# Relationship for log transformed data for 1-, 2-, and 3-family homes
+The scatterplots below illustrate this relationship; the first scatterplot is on original data for all homes, the second is on log-transformed data only for 1-, 2-, and 3-family homes.
+```{r}
+plot((bk.homes$gross.sqft),(bk.homes$sale.price.n), 
+     main="Square Footage vs. Sale Price", xlab='Square Footage', ylab='Sale Price')
 
+bk.homes <- bk.sale[which(grepl("FAMILY",bk.sale$building.class.category)),]
+plot(log10(bk.homes$gross.sqft),log10(bk.homes$sale.price.n), 
+     main="Log Transformed Sqft vs. Sale Price", xlab='Log10(SqFt)', ylab='Log10(SalePrice)')
+```
 
-
-# Conclusion
